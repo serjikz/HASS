@@ -1,0 +1,64 @@
+esphome:
+  name: kitchen-esp
+  platform: ESP8266
+  board: esp01_1m
+    
+  libraries:
+    - ArduinoJson
+    - SPI
+    - Wire
+    - RF24
+    
+  includes:
+    - ../libs/Adafruit_AHT10/
+    - ../libs/Adafruit_BusIO/
+    - kitchen-esp/KitchenCustomSensor.h
+    
+# Enable logging
+logger:
+  level: VERBOSE #makes uart stream available in esphome logstream
+  baud_rate: 0 #disable logging over uart
+  
+# Enable Home Assistant API
+api:
+
+ota:
+  password: "979f69d74d6592803c3be9f89b432f37"
+
+wifi:
+  ssid: "ASUS"
+  password: "02262017"
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Kitchen-Esp Fallback Hotspot"
+    password: "5IXTRUYdAXVH"
+
+captive_portal:
+
+i2c:
+  sda: GPIO4  
+  scl: GPIO5  
+  scan: false
+  frequency: 100kHz
+  
+sensor:
+  - platform: aht10
+    temperature:
+      name: "Kitchen Temperature"
+    humidity:
+      name: "Kitchen Humidity"
+    update_interval: 10s
+    
+    
+  - platform: custom
+    lambda: |-
+      auto kitchenSensor = new KitchenCustomSensor(id(balcony_street_temp).state);
+      App.register_component(kitchenSensor);
+      return {kitchenSensor->ds18b20TempBalconyStreet};
+      
+    sensors:
+    - name: "Temperature (S-from-HA)"
+      unit_of_measurement: °C
+      accuracy_decimals: 2
+
