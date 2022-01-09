@@ -16,8 +16,8 @@ ota:
   password: "d89274316948774714468e5159a94059"
 
 wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
+  ssid: "ASUS"
+  password: "02262017"
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
@@ -33,9 +33,9 @@ i2c:
   frequency: 100kHz
   
 dallas:
- - pin: GPIO2
-   update_interval: 10s
-   id: balcony_street_temp
+  - pin: GPIO2
+    update_interval: 10s
+    id: balcony_street_temp
 
 sensor:
   - platform: aht10
