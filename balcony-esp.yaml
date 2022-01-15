@@ -9,9 +9,6 @@ logger:
   level: VERY_VERBOSE #makes uart stream available in esphome logstream
   baud_rate: 0 #disable logging over uart
 
-# Enable Home Assistant API
-api:
-
 ota:
   password: "d89274316948774714468e5159a94059"
 
@@ -23,6 +20,11 @@ wifi:
   ap:
     ssid: "Balcony-Esp Fallback Hotspot"
     password: "SUA0lKujujub"
+
+mqtt:
+  broker: 192.168.1.187
+  username: sergeyz
+  password: Serg9292
 
 captive_portal:
 

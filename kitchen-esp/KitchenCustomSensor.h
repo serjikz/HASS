@@ -1,25 +1,27 @@
 #include "esphome.h"
-#include <ArduinoJson.h>
-#include "NRF24Receiver.h"
 #include <printf.h>
 
-class KitchenCustomSensor : public PollingComponent, public Sensor {
+class KitchenCustomSensor : public Component, public CustomMQTTDevice {
 public:
 
-    KitchenCustomSensor(float val) 
-        : PollingComponent(GLOBAL_DELAY) 
+    KitchenCustomSensor()         
     {
         ds18b20TempBalconyStreet = new Sensor();
-        _aht10Inited = false;
-        _tempStreet = val;
     }
 
     void setup() override { 
+        subscribe("balcony-esp/sensor/balcony_temperature/state", &KitchenCustomSensor::onBalconyTempMsg);        
+    } 
+
+    void onBalconyTempMsg(const std::string &payload) {
+        ESP_LOGD("FROM BALCONY TO KITCHEN ", "SMTHG");  
+        ds18b20TempBalconyStreet->publish_state(777);
     }
 
-    void update() override {
-        ds18b20TempBalconyStreet->publish_state(_tempStreet);
-        delay(GLOBAL_DELAY);
+    void onBalconyTempJsonMsg(JsonObject &root) {
+        if (!root.containsKey("key"))
+            return;
+        int value = root["key"];
     }
 
 public:
@@ -29,14 +31,12 @@ public:
 
 private:
 
-    StaticJsonDocument<200> _doc;
+
     Adafruit_AHT10 _aht10Main;
     Adafruit_Sensor* _aht_humidity;
     Adafruit_Sensor* _aht_temp;
     bool _aht10Inited = false;
     
-    Radio::BalconyNRFDataParser _nrfBalconyDataParser;
-
     String _dataBuf;
     float _temp;
     float _tempStreet;

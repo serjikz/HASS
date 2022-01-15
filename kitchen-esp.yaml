@@ -18,9 +18,6 @@ esphome:
 logger:
   level: VERBOSE #makes uart stream available in esphome logstream
   baud_rate: 0 #disable logging over uart
-  
-# Enable Home Assistant API
-api:
 
 ota:
   password: "979f69d74d6592803c3be9f89b432f37"
@@ -33,6 +30,11 @@ wifi:
   ap:
     ssid: "Kitchen-Esp Fallback Hotspot"
     password: "5IXTRUYdAXVH"
+
+mqtt:
+  broker: 192.168.1.187
+  username: sergeyz
+  password: Serg9292
 
 captive_portal:
 
@@ -50,15 +52,14 @@ sensor:
       name: "Kitchen Humidity"
     update_interval: 10s
     
-    
   - platform: custom
     lambda: |-
-      auto kitchenSensor = new KitchenCustomSensor(id(balcony_street_temp).state);
-      App.register_component(kitchenSensor);
-      return {kitchenSensor->ds18b20TempBalconyStreet};
+      auto kitchenMQTTSensor = new KitchenCustomSensor();
+      App.register_component(kitchenMQTTSensor);
+      return {kitchenMQTTSensor->ds18b20TempBalconyStreet};
       
     sensors:
-    - name: "Temperature (S-from-HA)"
+    - name: "Temperature (S-from-MQTT)"
       unit_of_measurement: °C
       accuracy_decimals: 2
 
