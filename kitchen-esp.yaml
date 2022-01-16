@@ -12,8 +12,11 @@ esphome:
   includes:
     - ../libs/Adafruit_AHT10/
     - ../libs/Adafruit_BusIO/
+    - ../libs/LiquidCrystal_I2C/
+    - ../libs/EncButton/src/
+    - kitchen-esp/LCD1602Display.h
     - kitchen-esp/KitchenCustomSensor.h
-    
+
 # Enable logging
 logger:
   level: VERBOSE #makes uart stream available in esphome logstream
@@ -59,7 +62,7 @@ sensor:
       return {kitchenMQTTSensor->ds18b20TempBalconyStreet};
       
     sensors:
-    - name: "Temperature (S-from-MQTT)"
+    - name: "Temperature (Street-from-MQTT)"
       unit_of_measurement: °C
       accuracy_decimals: 2
 

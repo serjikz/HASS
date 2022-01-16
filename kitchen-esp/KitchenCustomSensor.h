@@ -1,5 +1,6 @@
 #include "esphome.h"
 #include <printf.h>
+#include "LCD1602Display.h"
 
 class KitchenCustomSensor : public Component, public CustomMQTTDevice {
 public:
@@ -10,18 +11,39 @@ public:
     }
 
     void setup() override { 
-        subscribe("balcony-esp/sensor/balcony_temperature/state", &KitchenCustomSensor::onBalconyTempMsg);        
+        Display::LCD1602.Init();
+        subscribe("balcony-esp/sensor/street_temperature/state", &KitchenCustomSensor::onBalconyStreetMsg);     
+        subscribe("balcony-esp/sensor/balcony_temperature/state", &KitchenCustomSensor::onBalconyTempMsg);     
+        subscribe("balcony-esp/sensor/balcony_humidity/state", &KitchenCustomSensor::onBalconyHuidityMsg);               
     } 
 
-    void onBalconyTempMsg(const std::string &payload) {
-        ESP_LOGD("FROM BALCONY TO KITCHEN ", "SMTHG");  
-        ds18b20TempBalconyStreet->publish_state(777);
+    void onBalconyStreetMsg(const std::string &payload) { 
+        _tempStreet = ::atof(payload.c_str());
+        ds18b20TempBalconyStreet->publish_state(_tempStreet);
+    }
+
+    void onBalconyTempMsg(const std::string &payload) { 
+        _tempBalcony = ::atof(payload.c_str());
+    }
+
+    void onBalconyHuidityMsg(const std::string &payload) { 
+        _humidityBalcony = ::atof(payload.c_str());
     }
 
     void onBalconyTempJsonMsg(JsonObject &root) {
         if (!root.containsKey("key"))
             return;
         int value = root["key"];
+    }
+
+    void loop() override {
+        Display::LCD1602.Update();
+        float vals[3];
+        vals[0] = _tempBalcony;
+        vals[1] = _tempStreet;
+        vals[2] = _humidityBalcony;
+        Display::LCD1602.UpdateValues(vals);
+        Display::LCD1602.ShowStoragedData();
     }
 
 public:
@@ -38,9 +60,9 @@ private:
     bool _aht10Inited = false;
     
     String _dataBuf;
-    float _temp;
-    float _tempStreet;
-    float _humidity;
+    float _tempBalcony = 0.f;
+    float _tempStreet = 0.f;
+    float _humidityBalcony = 0.f;
     int _ahtTimer;
     const int RADIO_DELAY = 10;
 
