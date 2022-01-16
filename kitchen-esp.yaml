@@ -7,8 +7,7 @@ esphome:
     - ArduinoJson
     - SPI
     - Wire
-    - RF24
-    
+
   includes:
     - ../libs/Adafruit_AHT10/
     - ../libs/Adafruit_BusIO/

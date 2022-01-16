@@ -1,9 +1,7 @@
 #pragma once
 #include <LiquidCrystal_I2C.h>
-#include <EncButton.h>
 
 LiquidCrystal_I2C LCDMain(0x27, 16, 2);
-EncButton<EB_TICK, 0> btnMain;
 
 namespace Display {
     const String LOADING_WORD = "Loading...";
@@ -16,7 +14,6 @@ namespace Display {
             : _id(id)
             , _inited(false)
             , _lcdMain(&LCDMain)
-            , _btn(&btnMain)
         {}
 
         virtual void Init() {
@@ -37,17 +34,11 @@ namespace Display {
             }
         }
 
-        void Update() {
-            if (!_btn) {
-                return;
-            }
-            _btn->tick();
-            if (_btn->isClick()) {
-                ESP_LOGD("LCD1602Dislay: ", "btn tapped"); 
-                _firstLineData--;
-                if (_firstLineData < 0) {
-                    _firstLineData = SENSORS_COUNT - 1;
-                }
+        void OnTap() {
+            ESP_LOGD("LCD1602Dislay: ", "btn tapped"); 
+            _firstLineData--;
+            if (_firstLineData < 0) {
+                _firstLineData = SENSORS_COUNT - 1;
             }
         }
 
@@ -82,7 +73,6 @@ namespace Display {
         String _id;
         bool _inited;
         LiquidCrystal_I2C* _lcdMain;
-        EncButton<EB_TICK, 0>* _btn;
         const size_t LOAD_CURSOR_POS = 3;
         static const size_t SENSORS_COUNT = 3;
         float _vals[SENSORS_COUNT]; // [0] - t balc, [1] - t street, [2] - humidity balc
