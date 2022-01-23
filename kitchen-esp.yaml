@@ -12,7 +12,6 @@ esphome:
     - ../libs/Adafruit_AHT10/
     - ../libs/Adafruit_BusIO/
     - ../libs/LiquidCrystal_I2C/
-    - ../libs/EncButton/src/
     - kitchen-esp/LCD1602Display.h
     - kitchen-esp/KitchenCustomSensor.h
 

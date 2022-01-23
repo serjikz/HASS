@@ -2,25 +2,16 @@ esphome:
   name: main-esp
   platform: ESP8266
   board: esp01_1m
-    
-  libraries:
-    - libs
-    - ArduinoJson
-    - SPI
-    
-  includes:
-    - ../libs/Adafruit_AHT10/
-    - ../libs/Adafruit_BusIO/
-    - main-esp/src/TestComponent.h
-
 
 # Enable logging
 logger:
   level: VERBOSE #makes uart stream available in esphome logstream
   baud_rate: 0 #disable logging over uart
 
-# Enable Home Assistant API
-api:
+mqtt:
+  broker: 192.168.1.187
+  username: sergeyz
+  password: Serg9292
 
 ota:
   password: "4b770169f2f59a7e9f305942ba15c257"
@@ -39,42 +30,18 @@ captive_portal:
 i2c:
   sda: GPIO4  
   scl: GPIO5  
-  scan: false
-  frequency: 100kHz
-
-uart:
-  id: uart_bus
-  tx_pin: GPIO1
-  rx_pin: GPIO3
-  baud_rate: 9600
 
 sensor:
-- platform: custom
-  lambda: |-
-    auto megaUART = new KitchenCustomSensor(id(uart_bus));
-    App.register_component(megaUART);
-    return {megaUART->aht10TempBalcony, megaUART->aht10HumidityBalcony, megaUART->aht10TempHall, megaUART->aht10HumidityHall, megaUART->ds18b20TempBalconyStreet};
 
-  sensors:
-  - name: "Temperature (b)"
-    unit_of_measurement: °C
-    accuracy_decimals: 2
-  - name: "Humidity (b)"
-    unit_of_measurement: perc
-    accuracy_decimals: 2
-    
-  - name: "Temperature (h)"
-    unit_of_measurement: °C
-    accuracy_decimals: 2
-  - name: "Humidity (h)"
-    unit_of_measurement: perc
-    accuracy_decimals: 2
-    
-  - name: "Temperature (s)"
-    unit_of_measurement: °C
-    accuracy_decimals: 2
-    
-
-    
-
+  - platform: bmp280
+    temperature:
+      name: "Hall Temperature"
+      oversampling: 16x
+    pressure:
+      name: "Hall Pressure"
+      unit_of_measurement: "mmHg"
+      filters:
+        - multiply: 0.750062
+    update_interval: 10s
+    address: 0x76
     
