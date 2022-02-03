@@ -7,6 +7,7 @@ esphome:
     - ArduinoJson
     - SPI
     - Wire
+    - LoRa
 
   includes:
     - ../libs/Adafruit_AHT10/
@@ -42,8 +43,7 @@ captive_portal:
 i2c:
   sda: GPIO4  
   scl: GPIO5  
-  scan: false
-  frequency: 100kHz
+  scan: true
   
 sensor:
   - platform: aht10
@@ -57,10 +57,14 @@ sensor:
     lambda: |-
       auto kitchenMQTTSensor = new KitchenCustomSensor();
       App.register_component(kitchenMQTTSensor);
-      return {kitchenMQTTSensor->ds18b20TempBalconyStreet};
+      return {kitchenMQTTSensor->ds18b20TempBalconyStreet, kitchenMQTTSensor->temperatureGarage};
       
     sensors:
     - name: "Temperature (Street-from-MQTT)"
+      unit_of_measurement: °C
+      accuracy_decimals: 2
+      
+    - name: "Temperature (Garage-from-LoRa)"
       unit_of_measurement: °C
       accuracy_decimals: 2
 
